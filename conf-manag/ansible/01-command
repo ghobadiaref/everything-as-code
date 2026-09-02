@@ -1,0 +1,3 @@
+ansible-inventory --list -i /root/everything-as-code/conf-manag/ansible/hosts.yaml
+ansible server-01 -m ping
+ansible server-01 -a "free -h"

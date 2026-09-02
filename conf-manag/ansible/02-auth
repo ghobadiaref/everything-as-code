@@ -1,0 +1,6 @@
+ssh-keygen # normal user 
+ssh-keygen -p -f ~/.ssh/id_rsa
+ssh-copy-id ubuntu@194.5.207.102
+ssh-agent bash 
+ssh-add 
+
