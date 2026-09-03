@@ -1,0 +1,95 @@
+---
+- name: install and configure wordpress
+  hosts: wp-servers
+  become: yes
+  vars:
+    db_name: "wordpress"
+    db_username: "wordpress"
+  tasks:
+    - name: update apt cache
+      apt:
+        update_cache: yes
+    - name: install apache, mysql required package
+      apt:
+        name:
+          - apache2
+          - php
+          - php-cli
+          - php-fpm
+          - libapache2-mod-php
+          - php-mysql
+          - php-xml
+          - php-common
+          - php-curl
+          - php-zip
+          - php-xmlrpc
+          - mysql-client
+          - mysql-server
+          - python3-mysqldb
+          - python3-pip
+        state: present
+      tags:
+        - download        
+    - name: enable and start service
+      service:
+        name: apache2
+        enabled: yes
+        state: started
+# configure DB
+    - name: delete anonymous user on mysql
+      mysql_user:
+        name: ''
+        host: localhost
+        state: absent
+        login_unix_socket: /run/mysqld/mysqld.sock
+    - name: secure mysql root user
+      mysql_user:
+        name: root
+        host: "{{ item }}"
+        login_user: root
+        login_password: ""
+        login_unix_socket: /run/mysqld/mysqld.sock
+      with_items:
+        - localhost
+    - name: create wp database
+      mysql_db:
+        name: "{{ db_name }}"
+        state: present 
+        login_user: root
+        login_password: ""
+    - name: generate a password for wp user 
+      command: openssl rand -hex 7
+      register: db_password
+    - name: create mysql for database wp  
+      mysql_user:
+        name: "{{ db_username }}"
+        password: "{{ db_password.stdout }}"
+        host: localhost
+        login_user: root
+        login_password: ""
+        priv: "{{ db_name }}.*:ALL"
+        login_unix_socket: /run/mysqld/mysqld.sock
+    - name: present password 
+      debug:
+        msg: "The password of wordpress database is: {{ db_password.stdout }}"
+# install wp 
+    - name: download wp 
+      unarchive:
+        src: https://wordpress.org/latest.tar.gz 
+        dest: /var/www
+        remote_src: yes
+      tags:
+        - download 
+    - name: update default apache website configure 
+      lineinfile:
+        path: /etc/apache2/sites-available/000-default.conf
+        regexp: '^(\s*)DocumentRoot \/var\/www\/html'
+        line: '\1DocumentRoot /var/www/wordpress'
+        backrefs: yes
+      notify: restart apache2
+
+  handlers: 
+    - name: restart apache2  
+      service:
+        name: apache2
+        state: restarted

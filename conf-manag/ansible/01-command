@@ -2,3 +2,4 @@ ansible-inventory --list -i /root/everything-as-code/conf-manag/ansible/hosts.ya
 ansible server-01 -m ping
 ansible server-01 -a "free -h"
 ansible server-01 -a "free -h" -bK #become default sudo
+ansible-playbook -i inventory.ini playbook.yaml --skip-tags download
