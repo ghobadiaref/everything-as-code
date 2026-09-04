@@ -7,41 +7,26 @@
     db_username: "wordpress"
   tasks:
     - name: install packages 
-      block: 
-        - name: update apt cache
-          apt:
-            update_cache: yes
+      block:
+        - name: incloud os-specific vars for Debian family 
+          include_vars: "{{ ansible_os_family }}.yaml" 
         - name: install apache2 
-          apt: 
-            name: 
-              - apache2 
-              - libapache2-mod-php
+          package: 
+            name: {{ packages.apache}}
             state: latest 
             update_cache: yes
           notify: restart apache2
         - name: install mysql
-          apt: 
-            name: 
-              - mysql-client
-              - mysql-server
+          package: 
+            name: {{ packages.mysql }}
             state: latest 
             update_cache: yes
           notify: restart mysql
         - name: install prerequisties required packages
-          apt:
-            name:
-              - php
-              - php-cli
-              - php-fpm
-              - php-mysql
-              - php-xml
-              - php-common
-              - php-curl
-              - php-zip
-              - php-xmlrpc
-              - python3-mysqldb
-              - python3-pip
+          package:
+            name: {{ packages.prerequisties }}
             state: present
+            update_cache: yes
       tags:
         - download-packages 
 
@@ -94,7 +79,7 @@
             remote_src: yes
       rescue:
         - name: download unzip 
-          apt: 
+          package: 
             name:
               - unzip 
             state: latest 

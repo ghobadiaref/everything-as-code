@@ -1,0 +1,19 @@
+packages:
+  apache:
+    - apache2
+    - libapache2-mod-php
+  mysql:
+    - mysql-client
+    - mysql-server
+  prerequisties:
+    - php
+    - php-cli
+    - php-fpm
+    - php-mysql
+    - php-xml
+    - php-common
+    - php-curl
+    - php-zip
+    - php-xmlrpc
+    - python3-mysqldb
+    - python3-pip
