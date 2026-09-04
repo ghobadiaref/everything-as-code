@@ -87,6 +87,24 @@
         line: '\1DocumentRoot /var/www/wordpress'
         backrefs: yes
       notify: restart apache2
+# configure wordpress 
+    - name: create wp-config file
+      ansible.builtin.copy:
+        src: /var/www/wordpress/wp-config-sample.php
+        dest: /var/www/wordpress/wp-config.php
+        owner: www-data
+        group: www-data
+        mode: '0644'
+        remote_src: yes 
+    - name: modify wp-config 
+      lineinfile:
+        path: /var/www/wordpress/wp-config.php
+        regexp: "{{ item.find }}"
+        line: "{{ item.replace }}"
+      with_items:
+        - { "find": "define\\(.'DB_NAME',.+\\);", "replace": "define( 'DB_NAME', '{{ db_name }}' );" }
+        - { "find": "define\\(.'DB_USER',.+\\);", "replace": "define( 'DB_USER', '{{ db_username }}' );" }
+        - { "find": "define\\(.'DB_PASSWORD',.+\\);", "replace": "define( 'DB_PASSWORD', '{{ db_password.stdout }}' );" }
 
   handlers: 
     - name: restart apache2  
