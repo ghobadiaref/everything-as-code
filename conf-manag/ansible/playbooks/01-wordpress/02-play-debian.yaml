@@ -95,9 +95,10 @@
       rescue:
         - name: download unzip 
           apt: 
-            - unzip 
-          state: latest 
-          update_cache: yes 
+            name:
+              - unzip 
+            state: latest 
+            update_cache: yes 
         - name: download wp
           unarchive:
             src: https://wordpress.org/latest.tar.zip
@@ -140,6 +141,6 @@
         enabled: yes 
     - name: restart mysql 
       service:
-        name: mysql-server 
+        name: mysql.service
         state: restarted
         enabled: yes 
