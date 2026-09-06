@@ -1,0 +1,13 @@
+dnssec-validation: auto
+forwarders:
+  - {ipaddr: 1.1.1.1}
+  - {ipaddr: 8.8.8.8}
+  - {ipaddr: 4.2.2.4}
+
+allow-transfer: 
+  - {ipaddr: 192.168.67.0/24}
+
+acl:
+  - {subnet: 192.168.54.0/24}
+  - {subnet: 192.168.54.0/24}
+allow-query: any 

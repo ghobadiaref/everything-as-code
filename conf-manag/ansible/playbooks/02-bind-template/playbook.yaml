@@ -1,0 +1,23 @@
+---
+- name: install and configure bind 
+  hosts: all 
+  become: true 
+  vars_file: 
+    - vars.yaml 
+  tasks:
+    - name: install and configure bind 
+      apt: 
+        name:
+          - bind9
+          - bind-utils 
+        state: present
+        update_cache: yes 
+    - name: create custom bind config file 
+      template:
+        src: named.conf.options.j2
+        destination: /etc/bind/named.conf.options 
+        owner: root 
+        group: bind 
+        mode: 0640 
+
+
